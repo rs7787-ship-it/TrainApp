@@ -1,49 +1,32 @@
+import java.util.Arrays;
+
 /**
- * UC16: Sort Passenger Bogies by Capacity
- * Demonstrates the Bubble Sort algorithm without using built-in library methods.
+ * UC17: Sort Bogie Names Using Arrays.sort()
+ * Demonstrates the use of Java's built-in optimized sorting utilities.
  */
 public class TrainConsistApp {
 
     public static void main(String[] args) {
-        System.out.println("=== Train Consist Management App: UC16 ===");
+        System.out.println("=== Train Consist Management App: UC17 ===");
 
-        // 1. Array of passenger bogie capacities
-        int[] capacities = {72, 56, 24, 70, 60};
+        // 1. Array of bogie type names
+        String[] bogieTypes = {"Sleeper", "AC Chair", "First Class", "General", "Luxury"};
 
-        System.out.print("Initial Capacities: ");
-        printArray(capacities);
+        System.out.println("Initial Bogie Names: " + Arrays.toString(bogieTypes));
 
-        // 2. Bubble Sort Algorithm
-        // Outer loop handles the number of passes
-        int n = capacities.length;
-        for (int i = 0; i < n - 1; i++) {
-            // Inner loop compares adjacent elements
-            for (int j = 0; j < n - i - 1; j++) {
-                // If the left element is greater than the right, swap them
-                if (capacities[j] > capacities[j + 1]) {
-                    // Swapping Logic using a temporary variable
-                    int temp = capacities[j];
-                    capacities[j] = capacities[j + 1];
-                    capacities[j + 1] = temp;
-                }
-            }
-        }
+        // 2. Using Arrays.sort() for Optimized Sorting
+        // This handles alphabetical order (Natural Ordering) automatically for Strings.
+        Arrays.sort(bogieTypes);
 
         // 3. Display the sorted result
-        System.out.print("Sorted Capacities (Bubble Sort): ");
-        printArray(capacities);
-        
-        System.out.println("\nAlgorithm completed using manual adjacent swapping.");
-    }
+        // We use Arrays.toString() for a clean, readable output.
+        System.out.println("Sorted Bogie Names (Alphabetical): " + Arrays.toString(bogieTypes));
 
-    /**
-     * Helper method to display array contents
-     */
-    private static void printArray(int[] arr) {
-        System.out.print("[");
-        for (int i = 0; i < arr.length; i++) {
-            System.out.print(arr[i] + (i == arr.length - 1 ? "" : ", "));
-        }
-        System.out.println("]");
+        // 4. Demonstration with Duplicates
+        String[] duplicates = {"Sleeper", "AC Chair", "Sleeper", "General"};
+        Arrays.sort(duplicates);
+        System.out.println("\nHandling Duplicates: " + Arrays.toString(duplicates));
+        
+        System.out.println("\nSorting completed using Java's highly optimized internal algorithms.");
     }
 }
