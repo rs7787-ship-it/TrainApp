@@ -1,70 +1,49 @@
 /**
- * UC15: Safe Cargo Assignment
- * Demonstrates structured error handling with try-catch-finally.
+ * UC16: Sort Passenger Bogies by Capacity
+ * Demonstrates the Bubble Sort algorithm without using built-in library methods.
  */
-
-// Custom Runtime Exception: Used for operational errors that don't 
-// necessarily need to be declared everywhere (Unchecked).
-class CargoSafetyException extends RuntimeException {
-    public CargoSafetyException(String message) {
-        super(message);
-    }
-}
-
-class GoodsBogie {
-    private String shape;
-    private String currentCargo = "Empty";
-
-    public GoodsBogie(String shape) {
-        this.shape = shape;
-    }
-
-    public void assignCargo(String cargo) {
-        System.out.println("\n>>> Attempting to load: " + cargo + " into " + shape + " bogie.");
-        
-        try {
-            // Safety Rule: Petroleum MUST be in Cylindrical bogies.
-            if (cargo.equalsIgnoreCase("Petroleum") && !shape.equalsIgnoreCase("Cylindrical")) {
-                throw new CargoSafetyException("SAFETY ALERT: Petroleum cannot be loaded into " + shape + " bogies!");
-            }
-            
-            this.currentCargo = cargo;
-            System.out.println("SUCCESS: " + cargo + " loaded successfully.");
-            
-        } catch (CargoSafetyException e) {
-            // Handle the error gracefully
-            System.out.println("CAUGHT EXCEPTION: " + e.getMessage());
-            System.out.println("ACTION: Cargo assignment aborted to prevent hazards.");
-            
-        } finally {
-            // This block runs no matter what (Success or Failure)
-            System.out.println("LOG: Inspection completed for " + shape + " bogie.");
-        }
-    }
-
-    @Override
-    public String toString() {
-        return shape + " Bogie [Cargo: " + currentCargo + "]";
-    }
-}
-
 public class TrainConsistApp {
+
     public static void main(String[] args) {
-        System.out.println("=== Train Consist Management App: UC15 ===");
+        System.out.println("=== Train Consist Management App: UC16 ===");
 
-        GoodsBogie g1 = new GoodsBogie("Cylindrical");
-        GoodsBogie g2 = new GoodsBogie("Rectangular");
+        // 1. Array of passenger bogie capacities
+        int[] capacities = {72, 56, 24, 70, 60};
 
-        // 1. Safe Assignment
-        g1.assignCargo("Petroleum");
+        System.out.print("Initial Capacities: ");
+        printArray(capacities);
 
-        // 2. Unsafe Assignment (Handled)
-        g2.assignCargo("Petroleum");
+        // 2. Bubble Sort Algorithm
+        // Outer loop handles the number of passes
+        int n = capacities.length;
+        for (int i = 0; i < n - 1; i++) {
+            // Inner loop compares adjacent elements
+            for (int j = 0; j < n - i - 1; j++) {
+                // If the left element is greater than the right, swap them
+                if (capacities[j] > capacities[j + 1]) {
+                    // Swapping Logic using a temporary variable
+                    int temp = capacities[j];
+                    capacities[j] = capacities[j + 1];
+                    capacities[j + 1] = temp;
+                }
+            }
+        }
 
-        // 3. System Continuation
-        System.out.println("\n--- Final Cargo Status ---");
-        System.out.println(g1);
-        System.out.println(g2);
-        System.out.println("\nSystem health: STABLE. No crashes recorded.");
+        // 3. Display the sorted result
+        System.out.print("Sorted Capacities (Bubble Sort): ");
+        printArray(capacities);
+        
+        System.out.println("\nAlgorithm completed using manual adjacent swapping.");
+    }
+
+    /**
+     * Helper method to display array contents
+     */
+    private static void printArray(int[] arr) {
+        System.out.print("[");
+        for (int i = 0; i < arr.length; i++) {
+            System.out.print(arr[i] + (i == arr.length - 1 ? "" : ", "));
+        }
+        System.out.println("]");
     }
 }
