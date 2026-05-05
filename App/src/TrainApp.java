@@ -1,60 +1,67 @@
-import java.util.ArrayList;
-import java.util.List;
-import java.util.stream.Collectors;
+/**
+ * Custom Exception class for Railway Domain.
+ * We extend Exception to make it a 'Checked Exception', meaning the compiler 
+ * will force the developer to handle this error.
+ */
+class InvalidCapacityException extends Exception {
+    public InvalidCapacityException(String message) {
+        super(message);
+    }
+}
 
 /**
- * UC13: Performance Comparison (Loops vs Streams)
- * Benchmarks the execution time of imperative vs declarative filtering.
+ * PassengerBogie class with built-in validation.
+ * This follows the "Fail-Fast" principle.
  */
-class Bogie {
-    String type;
-    int capacity;
+class PassengerBogie {
+    private String type;
+    private int capacity;
 
-    public Bogie(String type, int capacity) {
+    public PassengerBogie(String type, int capacity) throws InvalidCapacityException {
+        // Enforce the business rule: Capacity MUST be > 0
+        if (capacity <= 0) {
+            throw new InvalidCapacityException("Capacity must be greater than zero. Provided: " + capacity);
+        }
         this.type = type;
         this.capacity = capacity;
+    }
+
+    @Override
+    public String toString() {
+        return type + " (" + capacity + " seats)";
     }
 }
 
 public class TrainConsistApp {
 
     public static void main(String[] args) {
-        System.out.println("=== Train Consist Management App: UC13 ===");
+        System.out.println("=== Train Consist Management App: UC14 ===");
 
-        // 1. Setup a large dataset to make measurements meaningful
-        List<Bogie> largeConsist = new ArrayList<>();
-        for (int i = 0; i < 10000; i++) {
-            largeConsist.add(new Bogie("Sleeper", 72));
-            largeConsist.add(new Bogie("AC Chair", 56));
+        // Scenario 1: Creating a valid bogie
+        try {
+            System.out.println("Attempting to create a valid bogie...");
+            PassengerBogie sleeper = new PassengerBogie("Sleeper", 72);
+            System.out.println("SUCCESS: Created " + sleeper);
+        } catch (InvalidCapacityException e) {
+            System.err.println("ERROR: " + e.getMessage());
         }
 
-        // 2. Benchmark Loop-Based Filtering
-        long startTimeLoop = System.nanoTime();
-        List<Bogie> loopFiltered = new ArrayList<>();
-        for (Bogie b : largeConsist) {
-            if (b.capacity > 60) {
-                loopFiltered.add(b);
-            }
+        // Scenario 2: Creating an invalid bogie (Zero capacity)
+        try {
+            System.out.println("\nAttempting to create an invalid bogie (Zero capacity)...");
+            PassengerBogie brokenBogie = new PassengerBogie("Economy", 0);
+        } catch (InvalidCapacityException e) {
+            System.out.println("CAUGHT EXCEPTION: " + e.getMessage());
         }
-        long endTimeLoop = System.nanoTime();
-        long durationLoop = endTimeLoop - startTimeLoop;
 
-        // 3. Benchmark Stream-Based Filtering
-        long startTimeStream = System.nanoTime();
-        List<Bogie> streamFiltered = largeConsist.stream()
-                .filter(b -> b.capacity > 60)
-                .collect(Collectors.toList());
-        long endTimeStream = System.nanoTime();
-        long durationStream = endTimeStream - startTimeStream;
-
-        // 4. Performance Summary
-        System.out.println("Processing " + largeConsist.size() + " bogies...");
-        System.out.println("\n--- Benchmark Results ---");
-        System.out.println("Loop Execution Time   : " + durationLoop + " ns");
-        System.out.println("Stream Execution Time : " + durationStream + " ns");
+        // Scenario 3: Creating an invalid bogie (Negative capacity)
+        try {
+            System.out.println("\nAttempting to create an invalid bogie (Negative capacity)...");
+            PassengerBogie ghostBogie = new PassengerBogie("First Class", -10);
+        } catch (InvalidCapacityException e) {
+            System.out.println("CAUGHT EXCEPTION: " + e.getMessage());
+        }
         
-        // 5. Verification
-        System.out.println("\nLogic Check: " + 
-            (loopFiltered.size() == streamFiltered.size() ? "PASSED (Results match)" : "FAILED"));
+        System.out.println("\nSystem remains stable. Invalid data was blocked.");
     }
 }
