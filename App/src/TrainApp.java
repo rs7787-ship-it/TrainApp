@@ -1,42 +1,43 @@
-import java.util.LinkedHashSet;
-import java.util.Set;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
- * UC5: Preserve Insertion Order while ensuring Uniqueness
- * Demonstrates LinkedHashSet to maintain a unique, ordered train formation.
+ * UC6: Map Bogie to Capacity
+ * Demonstrates the use of HashMap to associate bogies with their seat/load capacities.
  */
 public class TrainConsistApp {
 
     public static void main(String[] args) {
-        System.out.println("=== Train Consist Management App: UC5 ===");
+        System.out.println("=== Train Consist Management App: UC6 ===");
 
-        // 1. Initialize a LinkedHashSet
-        // This ensures every bogie is unique AND stays in the order it was added.
-        Set<String> trainFormation = new LinkedHashSet<>();
+        // 1. Initialize a HashMap
+        // Key: String (Bogie Type), Value: Integer (Capacity)
+        Map<String, Integer> bogieCapacities = new HashMap<>();
 
-        // 2. Attach bogies in a specific sequence
-        System.out.println("Attaching bogies to the engine...");
-        trainFormation.add("Engine");
-        trainFormation.add("Sleeper");
-        trainFormation.add("Cargo");
-        trainFormation.add("Guard");
+        // 2. Map bogies to their respective capacities (Key-Value Association)
+        // This is the "Put" operation
+        bogieCapacities.put("Sleeper", 72);
+        bogieCapacities.put("AC Chair Car", 56);
+        bogieCapacities.put("First Class", 24);
+        bogieCapacities.put("General", 90);
 
-        // 3. Attempt to add a duplicate bogie
-        // In a real yard, you can't attach the same physical bogie twice.
-        System.out.println("Attempting to attach duplicate: Sleeper");
-        boolean isAdded = trainFormation.add("Sleeper");
+        System.out.println("Bogie-Capacity mapping successfully created.\n");
 
-        if (!isAdded) {
-            System.out.println("Alert: Bogie 'Sleeper' is already part of the formation. Duplicate ignored.");
+        // 3. Display individual lookup
+        // HashMap provides near-instant retrieval using the key
+        String searchBogie = "Sleeper";
+        System.out.println("Capacity lookup for " + searchBogie + ": " + bogieCapacities.get(searchBogie) + " seats");
+
+        // 4. Iterate over the entire mapping
+        // We use entrySet() to access both the Key and the Value simultaneously
+        System.out.println("\n--- Full Consist Capacity Report ---");
+        for (Map.Entry<String, Integer> entry : bogieCapacities.entrySet()) {
+            System.out.println("Bogie Type: " + entry.getKey() + " | Capacity: " + entry.getValue() + " units");
         }
 
-        // 4. Display the formation
-        // Notice that unlike HashSet, the order here is guaranteed to be:
-        // Engine -> Sleeper -> Cargo -> Guard
-        System.out.println("\nFinal Train Formation (Ordered & Unique):");
-        System.out.println(trainFormation);
-
-        // 5. Verification of count
-        System.out.println("Total Bogies in Formation: " + trainFormation.size());
+        // 5. Demonstrating how a HashMap handles updates
+        // Adding the same key again updates the existing value
+        bogieCapacities.put("First Class", 22); // Updated capacity
+        System.out.println("\nUpdated First Class Capacity: " + bogieCapacities.get("First Class"));
     }
 }
