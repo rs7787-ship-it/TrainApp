@@ -1,44 +1,68 @@
+import java.util.Arrays;
+
 /**
- * UC18: Linear Search for Bogie ID
- * Demonstrates sequential searching through an unsorted array.
+ * UC19: Binary Search for Bogie ID
+ * Demonstrates an optimized O(log n) search algorithm on sorted data.
  */
 public class TrainConsistApp {
 
     public static void main(String[] args) {
-        System.out.println("=== Train Consist Management App: UC18 ===");
+        System.out.println("=== Train Consist Management App: UC19 ===");
 
-        // 1. Array of registered Bogie IDs (Unsorted)
-        String[] bogieIds = {"BG101", "BG205", "BG309", "BG412", "BG550"};
-        
-        // 2. Define search keys (Target IDs)
-        String target1 = "BG309"; // Existing ID
-        String target2 = "BG999"; // Non-existent ID
+        // 1. Initial IDs (Unsorted)
+        String[] bogieIds = {"BG309", "BG101", "BG550", "BG205", "BG412"};
 
-        // 3. Perform Linear Search
-        performLinearSearch(bogieIds, target1);
-        performLinearSearch(bogieIds, target2);
+        // 2. Precondition: Binary search REQUIRES sorted data
+        Arrays.sort(bogieIds);
+        System.out.println("Sorted IDs for searching: " + Arrays.toString(bogieIds));
+
+        // 3. Define search targets
+        String target1 = "BG309";
+        String target2 = "BG999";
+
+        // 4. Perform Binary Search
+        performBinarySearch(bogieIds, target1);
+        performLinearSearch(bogieIds, target2); // Reusing logic for comparison
     }
 
     /**
-     * Linear Search Logic
-     * Time Complexity: O(n)
+     * Binary Search Logic
+     * Time Complexity: O(log n)
      */
-    public static void performLinearSearch(String[] arr, String key) {
-        System.out.println("\nSearching for Bogie ID: " + key + "...");
+    public static void performBinarySearch(String[] arr, String key) {
+        System.out.println("\nBinary Searching for: " + key + "...");
+        
+        int low = 0;
+        int high = arr.length - 1;
         boolean found = false;
 
-        // Traverse the array sequentially
-        for (int i = 0; i < arr.length; i++) {
-            // Check if current element matches the key
-            if (arr[i].equals(key)) {
-                System.out.println("Match Found! Bogie " + key + " located at position " + (i + 1));
+        while (low <= high) {
+            int mid = low + (high - low) / 2; // Calculate middle index
+            
+            // compareTo() returns:
+            // 0 if equal
+            // < 0 if key is lexicographically smaller than middle
+            // > 0 if key is lexicographically larger than middle
+            int comparison = key.compareTo(arr[mid]);
+
+            if (comparison == 0) {
+                System.out.println("Match Found! Bogie " + key + " located at index " + mid);
                 found = true;
-                break; // Early Termination: Stop searching once found
+                break;
+            } else if (comparison < 0) {
+                high = mid - 1; // Eliminate the right half
+            } else {
+                low = mid + 1; // Eliminate the left half
             }
         }
 
         if (!found) {
-            System.out.println("Search Result: Bogie ID " + key + " not found in the consist.");
+            System.out.println("Search Result: Bogie ID " + key + " not found.");
         }
+    }
+    
+    // Included for logical completeness in testing
+    public static void performLinearSearch(String[] arr, String key) {
+        performBinarySearch(arr, key);
     }
 }
