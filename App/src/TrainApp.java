@@ -1,67 +1,70 @@
 /**
- * Custom Exception class for Railway Domain.
- * We extend Exception to make it a 'Checked Exception', meaning the compiler 
- * will force the developer to handle this error.
+ * UC15: Safe Cargo Assignment
+ * Demonstrates structured error handling with try-catch-finally.
  */
-class InvalidCapacityException extends Exception {
-    public InvalidCapacityException(String message) {
+
+// Custom Runtime Exception: Used for operational errors that don't 
+// necessarily need to be declared everywhere (Unchecked).
+class CargoSafetyException extends RuntimeException {
+    public CargoSafetyException(String message) {
         super(message);
     }
 }
 
-/**
- * PassengerBogie class with built-in validation.
- * This follows the "Fail-Fast" principle.
- */
-class PassengerBogie {
-    private String type;
-    private int capacity;
+class GoodsBogie {
+    private String shape;
+    private String currentCargo = "Empty";
 
-    public PassengerBogie(String type, int capacity) throws InvalidCapacityException {
-        // Enforce the business rule: Capacity MUST be > 0
-        if (capacity <= 0) {
-            throw new InvalidCapacityException("Capacity must be greater than zero. Provided: " + capacity);
+    public GoodsBogie(String shape) {
+        this.shape = shape;
+    }
+
+    public void assignCargo(String cargo) {
+        System.out.println("\n>>> Attempting to load: " + cargo + " into " + shape + " bogie.");
+        
+        try {
+            // Safety Rule: Petroleum MUST be in Cylindrical bogies.
+            if (cargo.equalsIgnoreCase("Petroleum") && !shape.equalsIgnoreCase("Cylindrical")) {
+                throw new CargoSafetyException("SAFETY ALERT: Petroleum cannot be loaded into " + shape + " bogies!");
+            }
+            
+            this.currentCargo = cargo;
+            System.out.println("SUCCESS: " + cargo + " loaded successfully.");
+            
+        } catch (CargoSafetyException e) {
+            // Handle the error gracefully
+            System.out.println("CAUGHT EXCEPTION: " + e.getMessage());
+            System.out.println("ACTION: Cargo assignment aborted to prevent hazards.");
+            
+        } finally {
+            // This block runs no matter what (Success or Failure)
+            System.out.println("LOG: Inspection completed for " + shape + " bogie.");
         }
-        this.type = type;
-        this.capacity = capacity;
     }
 
     @Override
     public String toString() {
-        return type + " (" + capacity + " seats)";
+        return shape + " Bogie [Cargo: " + currentCargo + "]";
     }
 }
 
 public class TrainConsistApp {
-
     public static void main(String[] args) {
-        System.out.println("=== Train Consist Management App: UC14 ===");
+        System.out.println("=== Train Consist Management App: UC15 ===");
 
-        // Scenario 1: Creating a valid bogie
-        try {
-            System.out.println("Attempting to create a valid bogie...");
-            PassengerBogie sleeper = new PassengerBogie("Sleeper", 72);
-            System.out.println("SUCCESS: Created " + sleeper);
-        } catch (InvalidCapacityException e) {
-            System.err.println("ERROR: " + e.getMessage());
-        }
+        GoodsBogie g1 = new GoodsBogie("Cylindrical");
+        GoodsBogie g2 = new GoodsBogie("Rectangular");
 
-        // Scenario 2: Creating an invalid bogie (Zero capacity)
-        try {
-            System.out.println("\nAttempting to create an invalid bogie (Zero capacity)...");
-            PassengerBogie brokenBogie = new PassengerBogie("Economy", 0);
-        } catch (InvalidCapacityException e) {
-            System.out.println("CAUGHT EXCEPTION: " + e.getMessage());
-        }
+        // 1. Safe Assignment
+        g1.assignCargo("Petroleum");
 
-        // Scenario 3: Creating an invalid bogie (Negative capacity)
-        try {
-            System.out.println("\nAttempting to create an invalid bogie (Negative capacity)...");
-            PassengerBogie ghostBogie = new PassengerBogie("First Class", -10);
-        } catch (InvalidCapacityException e) {
-            System.out.println("CAUGHT EXCEPTION: " + e.getMessage());
-        }
-        
-        System.out.println("\nSystem remains stable. Invalid data was blocked.");
+        // 2. Unsafe Assignment (Handled)
+        g2.assignCargo("Petroleum");
+
+        // 3. System Continuation
+        System.out.println("\n--- Final Cargo Status ---");
+        System.out.println(g1);
+        System.out.println(g2);
+        System.out.println("\nSystem health: STABLE. No crashes recorded.");
     }
 }
