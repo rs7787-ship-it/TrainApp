@@ -1,39 +1,41 @@
-import java.util.HashSet;
-import java.util.Set;
+import java.util.LinkedList;
 
 /**
- * UC3: Track Unique Bogie IDs
- * Demonstrates the use of HashSet to prevent duplicate bogie registrations.
+ * UC4: Maintain Ordered Train Consist
+ * Demonstrates how LinkedList models the physical chaining of a train.
  */
 public class TrainConsistApp {
 
     public static void main(String[] args) {
-        System.out.println("=== Train Consist Management App: UC3 ===");
+        System.out.println("=== Train Consist Management App: UC4 ===");
 
-        // 1. Initialize a HashSet to store unique Bogie IDs
-        // Set is the interface; HashSet is the concrete implementation.
-        Set<String> bogieIds = new HashSet<>();
+        // 1. Initialize a LinkedList
+        // LinkedList is ideal for frequently adding/removing from the ends or middle.
+        LinkedList<String> trainConsist = new LinkedList<>();
 
-        // 2. Adding Bogie IDs
-        System.out.println("Registering bogies in the system...");
-        bogieIds.add("BG101");
-        bogieIds.add("BG102");
-        bogieIds.add("BG103");
+        // 2. Add Bogies to form the initial sequence
+        trainConsist.add("Engine");
+        trainConsist.add("Sleeper");
+        trainConsist.add("AC Coach");
+        trainConsist.add("Cargo");
+        trainConsist.add("Guard");
 
-        // 3. Attempting to add a duplicate Bogie ID
-        // The system should automatically reject this.
-        System.out.println("Attempting to add duplicate ID: BG101");
-        boolean isAdded = bogieIds.add("BG101"); 
+        System.out.println("Initial Consist: " + trainConsist);
 
-        if (!isAdded) {
-            System.out.println("Registration Failed: Bogie ID 'BG101' already exists!");
-        }
+        // 3. Middle Insertion (Adding a Pantry Car)
+        // We insert at index 2 (between Sleeper and AC Coach)
+        System.out.println("\nAdding Pantry Car at position 2...");
+        trainConsist.add(2, "Pantry Car");
+        System.out.println("Updated Consist: " + trainConsist);
 
-        // 4. Display the unique IDs
-        // Note: HashSet does not guarantee the order of elements.
-        System.out.println("\nFinal List of Unique Registered Bogie IDs:");
-        System.out.println(bogieIds);
-        
-        System.out.println("Total Unique Bogies: " + bogieIds.size());
+        // 4. Detaching from ends (removeFirst and removeLast)
+        // Simulate removing the Engine and the Guard coach for maintenance
+        System.out.println("\nRemoving the Engine (Head) and Guard (Tail)...");
+        trainConsist.removeFirst();
+        trainConsist.removeLast();
+
+        // 5. Final ordered display
+        System.out.println("Final Physical Consist: " + trainConsist);
+        System.out.println("Total Bogies remaining: " + trainConsist.size());
     }
 }
