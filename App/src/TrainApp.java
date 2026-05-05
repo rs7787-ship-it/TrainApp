@@ -1,54 +1,47 @@
-import java.util.ArrayList;
-import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
- * UC10: Count Total Seats in Train
- * Demonstrates Stream map-reduce pattern to aggregate numeric data.
+ * UC11: Validate Train ID & Cargo Codes
+ * Demonstrates the use of Regex (Pattern & Matcher) for input validation.
  */
-class Bogie {
-    String name;
-    int capacity;
-
-    public Bogie(String name, int capacity) {
-        this.name = name;
-        this.capacity = capacity;
-    }
-
-    @Override
-    public String toString() {
-        return name + " (" + capacity + ")";
-    }
-}
-
 public class TrainConsistApp {
 
     public static void main(String[] args) {
-        System.out.println("=== Train Consist Management App: UC10 ===");
+        System.out.println("=== Train Consist Management App: UC11 ===");
 
-        // 1. Initialize the train consist
-        List<Bogie> trainConsist = new ArrayList<>();
-        trainConsist.add(new Bogie("Sleeper", 72));
-        trainConsist.add(new Bogie("AC Chair", 56));
-        trainConsist.add(new Bogie("Sleeper", 72));
-        trainConsist.add(new Bogie("First Class", 24));
-        trainConsist.add(new Bogie("General", 90));
+        // 1. Define Regex Patterns
+        // TRN- followed by exactly 4 digits (\\d{4})
+        String trainIdRegex = "TRN-\\d{4}"; 
+        // PET- followed by exactly 2 uppercase letters ([A-Z]{2})
+        String cargoCodeRegex = "PET-[A-Z]{2}";
 
-        System.out.println("Current Consist: " + trainConsist);
+        // 2. Compile the patterns for efficiency
+        Pattern trainIdPattern = Pattern.compile(trainIdRegex);
+        Pattern cargoPattern = Pattern.compile(cargoCodeRegex);
 
-        // 2. Map-Reduce Pipeline
-        // Step 1: stream() - Put bogies on the conveyor
-        // Step 2: map() - Extract only the capacity (Integer) from the Bogie object
-        // Step 3: reduce() - Sum them up starting from 0 (Identity)
-        int totalSeats = trainConsist.stream()
-                .map(b -> b.capacity)           // Transformation
-                .reduce(0, Integer::sum);      // Aggregation
+        // 3. Test Inputs
+        String[] testTrainIds = {"TRN-1234", "TRAIN12", "TRN-123", "TRN-56789"};
+        String[] testCargoCodes = {"PET-AB", "PET-ab", "PET12", "PET-XYZ"};
 
-        // 3. Display the total numeric insight
-        System.out.println("\n--- Operational Summary ---");
-        System.out.println("Total Passenger Bogies: " + trainConsist.size());
-        System.out.println("Total Seating Capacity: " + totalSeats + " seats");
+        System.out.println("\n--- Validating Train IDs ---");
+        for (String id : testTrainIds) {
+            Matcher matcher = trainIdPattern.matcher(id);
+            if (matcher.matches()) {
+                System.out.println("[VALID]   " + id);
+            } else {
+                System.out.println("[INVALID] " + id + " (Expected format: TRN-XXXX)");
+            }
+        }
 
-        // 4. Verify original list integrity
-        System.out.println("\nVerification: Original list size is still " + trainConsist.size());
+        System.out.println("\n--- Validating Cargo Codes ---");
+        for (String code : testCargoCodes) {
+            Matcher matcher = cargoPattern.matcher(code);
+            if (matcher.matches()) {
+                System.out.println("[VALID]   " + code);
+            } else {
+                System.out.println("[INVALID] " + code + " (Expected format: PET-XX)");
+            }
+        }
     }
 }
