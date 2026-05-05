@@ -1,68 +1,51 @@
 import java.util.Arrays;
 
 /**
- * UC19: Binary Search for Bogie ID
- * Demonstrates an optimized O(log n) search algorithm on sorted data.
+ * UC20: Exception Handling During Search Operations
+ * Demonstrates defensive programming by validating system state before execution.
  */
 public class TrainConsistApp {
 
     public static void main(String[] args) {
-        System.out.println("=== Train Consist Management App: UC19 ===");
+        System.out.println("=== Train Consist Management App: UC20 ===");
 
-        // 1. Initial IDs (Unsorted)
-        String[] bogieIds = {"BG309", "BG101", "BG550", "BG205", "BG412"};
+        // Scenario 1: Searching an empty train consist
+        String[] emptyConsist = {};
+        try {
+            System.out.println("Attempting to search in an empty consist...");
+            searchBogie(emptyConsist, "BG101");
+        } catch (IllegalStateException e) {
+            System.out.println("CAUGHT EXCEPTION: " + e.getMessage());
+        }
 
-        // 2. Precondition: Binary search REQUIRES sorted data
-        Arrays.sort(bogieIds);
-        System.out.println("Sorted IDs for searching: " + Arrays.toString(bogieIds));
-
-        // 3. Define search targets
-        String target1 = "BG309";
-        String target2 = "BG999";
-
-        // 4. Perform Binary Search
-        performBinarySearch(bogieIds, target1);
-        performLinearSearch(bogieIds, target2); // Reusing logic for comparison
+        // Scenario 2: Searching a valid train consist
+        String[] validConsist = {"BG101", "BG205", "BG309"};
+        try {
+            System.out.println("\nAttempting to search in a valid consist...");
+            searchBogie(validConsist, "BG205");
+        } catch (IllegalStateException e) {
+            System.out.println("ERROR: " + e.getMessage());
+        }
     }
 
     /**
-     * Binary Search Logic
-     * Time Complexity: O(log n)
+     * Validates state and searches for a Bogie ID.
+     * @throws IllegalStateException if the consist is empty.
      */
-    public static void performBinarySearch(String[] arr, String key) {
-        System.out.println("\nBinary Searching for: " + key + "...");
-        
-        int low = 0;
-        int high = arr.length - 1;
-        boolean found = false;
-
-        while (low <= high) {
-            int mid = low + (high - low) / 2; // Calculate middle index
-            
-            // compareTo() returns:
-            // 0 if equal
-            // < 0 if key is lexicographically smaller than middle
-            // > 0 if key is lexicographically larger than middle
-            int comparison = key.compareTo(arr[mid]);
-
-            if (comparison == 0) {
-                System.out.println("Match Found! Bogie " + key + " located at index " + mid);
-                found = true;
-                break;
-            } else if (comparison < 0) {
-                high = mid - 1; // Eliminate the right half
-            } else {
-                low = mid + 1; // Eliminate the left half
-            }
+    public static void searchBogie(String[] consist, String targetId) {
+        // 1. State Validation (Defensive Check)
+        if (consist == null || consist.length == 0) {
+            throw new IllegalStateException("Search Operation Failed: No bogies are currently in the train consist.");
         }
 
-        if (!found) {
-            System.out.println("Search Result: Bogie ID " + key + " not found.");
+        // 2. Search Logic (Binary Search as per UC19)
+        Arrays.sort(consist); // Ensure sorted for Binary Search
+        int index = Arrays.binarySearch(consist, targetId);
+
+        if (index >= 0) {
+            System.out.println("SUCCESS: Bogie " + targetId + " found at position " + (index + 1));
+        } else {
+            System.out.println("RESULT: Bogie " + targetId + " not found in the consist.");
         }
-    }
-    
-    // Included for logical completeness in testing
-    public static void performLinearSearch(String[] arr, String key) {
-        performBinarySearch(arr, key);
     }
 }
