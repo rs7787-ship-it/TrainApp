@@ -1,58 +1,60 @@
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
- * UC12: Safety Compliance Check for Goods Bogies
- * Demonstrates business rule enforcement using Stream.allMatch().
+ * UC13: Performance Comparison (Loops vs Streams)
+ * Benchmarks the execution time of imperative vs declarative filtering.
  */
-class GoodsBogie {
+class Bogie {
     String type;
-    String cargo;
+    int capacity;
 
-    public GoodsBogie(String type, String cargo) {
+    public Bogie(String type, int capacity) {
         this.type = type;
-        this.cargo = cargo;
-    }
-
-    @Override
-    public String toString() {
-        return type + " [" + cargo + "]";
+        this.capacity = capacity;
     }
 }
 
 public class TrainConsistApp {
 
     public static void main(String[] args) {
-        System.out.println("=== Train Consist Management App: UC12 ===");
+        System.out.println("=== Train Consist Management App: UC13 ===");
 
-        // 1. Prepare the Goods Consist
-        List<GoodsBogie> goodsConsist = new ArrayList<>();
-        goodsConsist.add(new GoodsBogie("Rectangular", "Coal"));
-        goodsConsist.add(new GoodsBogie("Cylindrical", "Petroleum"));
-        goodsConsist.add(new GoodsBogie("Rectangular", "Iron Ore"));
-        // This next line would trigger a safety failure if changed to something other than Petroleum
-        goodsConsist.add(new GoodsBogie("Cylindrical", "Petroleum")); 
-
-        System.out.println("Inspecting goods consist: " + goodsConsist);
-
-        // 2. Apply Safety Compliance Check using allMatch()
-        // Rule: IF type is Cylindrical, THEN cargo MUST be Petroleum.
-        // Logic: For every bogie 'b', (it's not cylindrical) OR (it's carrying petroleum).
-        boolean isSafe = goodsConsist.stream().allMatch(b -> {
-            if (b.type.equalsIgnoreCase("Cylindrical")) {
-                return b.cargo.equalsIgnoreCase("Petroleum");
-            }
-            return true; // Non-cylindrical bogies pass this specific check
-        });
-
-        // 3. Display the Compliance Result
-        System.out.println("\n--- Safety Inspection Report ---");
-        if (isSafe) {
-            System.out.println("STATUS: [PASSED]");
-            System.out.println("MESSAGE: All bogies comply with cargo safety standards.");
-        } else {
-            System.out.println("STATUS: [FAILED]");
-            System.out.println("ALERT: Safety violation detected! Cylindrical bogies can only carry Petroleum.");
+        // 1. Setup a large dataset to make measurements meaningful
+        List<Bogie> largeConsist = new ArrayList<>();
+        for (int i = 0; i < 10000; i++) {
+            largeConsist.add(new Bogie("Sleeper", 72));
+            largeConsist.add(new Bogie("AC Chair", 56));
         }
+
+        // 2. Benchmark Loop-Based Filtering
+        long startTimeLoop = System.nanoTime();
+        List<Bogie> loopFiltered = new ArrayList<>();
+        for (Bogie b : largeConsist) {
+            if (b.capacity > 60) {
+                loopFiltered.add(b);
+            }
+        }
+        long endTimeLoop = System.nanoTime();
+        long durationLoop = endTimeLoop - startTimeLoop;
+
+        // 3. Benchmark Stream-Based Filtering
+        long startTimeStream = System.nanoTime();
+        List<Bogie> streamFiltered = largeConsist.stream()
+                .filter(b -> b.capacity > 60)
+                .collect(Collectors.toList());
+        long endTimeStream = System.nanoTime();
+        long durationStream = endTimeStream - startTimeStream;
+
+        // 4. Performance Summary
+        System.out.println("Processing " + largeConsist.size() + " bogies...");
+        System.out.println("\n--- Benchmark Results ---");
+        System.out.println("Loop Execution Time   : " + durationLoop + " ns");
+        System.out.println("Stream Execution Time : " + durationStream + " ns");
+        
+        // 5. Verification
+        System.out.println("\nLogic Check: " + 
+            (loopFiltered.size() == streamFiltered.size() ? "PASSED (Results match)" : "FAILED"));
     }
 }
