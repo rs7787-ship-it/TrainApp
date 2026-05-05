@@ -1,39 +1,39 @@
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
- * UC2: Add Passenger Bogies to Train
- * Demonstrates CRUD operations: Adding, removing, and searching within an ArrayList.
+ * UC3: Track Unique Bogie IDs
+ * Demonstrates the use of HashSet to prevent duplicate bogie registrations.
  */
 public class TrainConsistApp {
 
     public static void main(String[] args) {
-        System.out.println("=== Train Consist Management App: UC2 ===");
+        System.out.println("=== Train Consist Management App: UC3 ===");
 
-        // 1. Initialize the list
-        List<String> passengerBogies = new ArrayList<>();
+        // 1. Initialize a HashSet to store unique Bogie IDs
+        // Set is the interface; HashSet is the concrete implementation.
+        Set<String> bogieIds = new HashSet<>();
 
-        // 2. Add Bogies (Create)
-        // ArrayList maintains "Insertion Order" - the order we add them is the order they appear.
-        passengerBogies.add("Sleeper");
-        passengerBogies.add("AC Chair");
-        passengerBogies.add("First Class");
+        // 2. Adding Bogie IDs
+        System.out.println("Registering bogies in the system...");
+        bogieIds.add("BG101");
+        bogieIds.add("BG102");
+        bogieIds.add("BG103");
 
-        System.out.println("After adding bogies: " + passengerBogies);
-        System.out.println("Total Bogie Count: " + passengerBogies.size());
+        // 3. Attempting to add a duplicate Bogie ID
+        // The system should automatically reject this.
+        System.out.println("Attempting to add duplicate ID: BG101");
+        boolean isAdded = bogieIds.add("BG101"); 
 
-        // 3. Remove a Bogie (Delete)
-        // We simulate uncoupling the "AC Chair" bogie.
-        System.out.println("\nRemoving AC Chair bogie...");
-        passengerBogies.remove("AC Chair");
+        if (!isAdded) {
+            System.out.println("Registration Failed: Bogie ID 'BG101' already exists!");
+        }
 
-        // 4. Check Existence (Search)
-        // We verify if the "Sleeper" bogie is still part of the consist.
-        System.out.println("Is Sleeper bogie present? " + passengerBogies.contains("Sleeper"));
-        System.out.println("Is AC Chair bogie present? " + passengerBogies.contains("AC Chair"));
-
-        // 5. Final Consist Summary (Read)
-        System.out.println("\nFinal Train Consist: " + passengerBogies);
-        System.out.println("Final Bogie Count: " + passengerBogies.size());
+        // 4. Display the unique IDs
+        // Note: HashSet does not guarantee the order of elements.
+        System.out.println("\nFinal List of Unique Registered Bogie IDs:");
+        System.out.println(bogieIds);
+        
+        System.out.println("Total Unique Bogies: " + bogieIds.size());
     }
 }
